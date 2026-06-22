@@ -4,8 +4,47 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "07a3b79e33723c7645992d0cdcd986a5",
+    "content-hash": "5d103841506feba6067092cf199b6d3e",
     "packages": [
+        {
+            "name": "php-pico/http-message",
+            "version": "0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-pico/http-message.git",
+                "reference": "456cfb830323c53bbcf7f71105bfb9b3e3733045"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-pico/http-message/zipball/456cfb830323c53bbcf7f71105bfb9b3e3733045",
+                "reference": "456cfb830323c53bbcf7f71105bfb9b3e3733045",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.5",
+                "psr/http-message": "^2.0"
+            },
+            "require-dev": {
+                "carthage-software/mago": "^1.30.0",
+                "phpunit/phpunit": "^12.5.30"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpPico\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PSR-7 compliant HTTP message package.",
+            "support": {
+                "issues": "https://github.com/php-pico/http-message/issues",
+                "source": "https://github.com/php-pico/http-message/tree/0.1.1"
+            },
+            "time": "2026-06-22T13:49:21+00:00"
+        },
         {
             "name": "psr/http-factory",
             "version": "1.1.0",

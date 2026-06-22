@@ -14,7 +14,8 @@
     },
     "require"     : {
         "php": "^8.5",
-        "psr/http-factory": "^1.1"
+        "psr/http-factory": "^1.1",
+        "php-pico/http-message": "^0.1.1"
     },
     "autoload"    : {
         "psr-4": {
