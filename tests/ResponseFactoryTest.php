@@ -32,7 +32,9 @@ final class ResponseFactoryTest extends TestCase
         $factory = new HttpFactory();
 
         $response = $factory->createResponse();
-        $this->assertInstanceOf(ResponseInterface::class, $response, 'HttpFactory::createResponse() must return an instance of Psr\Http\Message\ResponseInterface');
+
+        $expectedClass = ResponseInterface::class;
+        $this->assertInstanceOf($expectedClass, $response, sprintf('HttpFactory::createResponse() must return an instance of %s', $expectedClass));
     }
 
     #[Test]

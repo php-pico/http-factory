@@ -31,7 +31,9 @@ final class RequestFactoryTest extends TestCase
         $factory = new HttpFactory();
 
         $request = $factory->createRequest('GET', 'https://example.com');
-        $this->assertInstanceOf(RequestInterface::class, $request, 'HttpFactory::createRequest() must return an instance of Psr\Http\Message\RequestInterface');
+        
+        $expectedClass = RequestInterface::class;
+        $this->assertInstanceOf($expectedClass, $request, sprintf('HttpFactory::createRequest() must return an instance of %s', $expectedClass));
     }
 
     #[Test]
