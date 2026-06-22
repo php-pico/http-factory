@@ -12,7 +12,7 @@ use Psr\Http\Message\RequestInterface;
 use PhpPico\Http\Message\Uri;
 
 #[CoversClass(HttpFactory::class)]
-final class HttpFactoryTest extends TestCase
+final class RequestFactoryTest extends TestCase
 {
     #[Test]
     public function create_request(): void
