@@ -17,6 +17,15 @@ use PhpPico\Http\Message\Uri;
 final class RequestFactoryTest extends TestCase
 {
     #[Test]
+    public function implements_interface(): void
+    {
+        $factory = new HttpFactory();
+
+        $expectedClass = RequestFactoryInterface::class;
+        $this->assertInstanceOf($expectedClass, $factory, sprintf('HTTP Factory must be an instance of %s', $expectedClass));
+    }
+
+    #[Test]
     public function create_request(): void
     {
         $factory = new HttpFactory();

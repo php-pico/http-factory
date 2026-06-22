@@ -18,6 +18,15 @@ use PHPUnit\Framework\Attributes\DataProvider;
 final class ResponseFactoryTest extends TestCase
 {
     #[Test]
+    public function implements_interface(): void
+    {
+        $factory = new HttpFactory();
+
+        $expectedClass = ResponseFactoryInterface::class;
+        $this->assertInstanceOf($expectedClass, $factory, sprintf('HTTP Factory must be an instance of %s', $expectedClass));
+    }
+
+    #[Test]
     public function create_response(): void
     {
         $factory = new HttpFactory();
