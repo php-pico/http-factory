@@ -6,11 +6,13 @@ namespace PhpPico\Http\Factory\Tests;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use Psr\Http\Message\RequestFactoryInterface;
 use PhpPico\Http\Factory\HttpFactory;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\RequestInterface;
 use PhpPico\Http\Message\Uri;
 
+#[CoversClass(RequestFactoryInterface::class)]
 #[CoversClass(HttpFactory::class)]
 final class RequestFactoryTest extends TestCase
 {
