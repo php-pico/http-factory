@@ -11,12 +11,20 @@ use Psr\Http\Message\UriInterface;
 
 final readonly class ServerRequestCreator
 {
-    /** @param array<int, string> $trustedProxies */
+    /**
+     * @param HttpFactory $factory
+     * @param string[]    $trustedProxies
+     */
     public function __construct(
         protected HttpFactory $factory,
         protected array $trustedProxies = [],
     ) {}
 
+    /**
+     * Build a ServerRequest object from PHP superglobals.
+     *
+     * @return ServerRequestInterface
+     */
     public function fromGlobals(): ServerRequestInterface
     {
         return $this->fromArrays(
@@ -30,11 +38,15 @@ final readonly class ServerRequestCreator
     }
 
     /**
-     * @param array<string, mixed> $server
+     * Build a ServerRequest object from arrays.
+     *
+     * @param array<string, mixed>    $server
      * @param array<array-key, mixed> $get
      * @param array<array-key, mixed> $post
      * @param array<array-key, mixed> $cookie
      * @param array<array-key, mixed> $files
+     *
+     * @return ServerRequestInterface
      */
     public function fromArrays(
         array $server,
@@ -63,7 +75,13 @@ final readonly class ServerRequestCreator
             ->withBody($stream);
     }
 
-    /** @param array<string, mixed> $server */
+    /**
+     * Parse method.
+     *
+     * @param array<string, mixed> $server
+     *
+     * @return string Defaults to 'GET'
+     */
     protected function getMethod(array $server): string
     {
         $method = strtoupper((string) ($server['REQUEST_METHOD'] ?? ''));
@@ -71,7 +89,13 @@ final readonly class ServerRequestCreator
         return $method === '' ? 'GET' : $method;
     }
 
-    /** @param array<string, mixed> $server */
+    /**
+     * Parse protocol version.
+     *
+     * @param array<string, mixed> $server
+     *
+     * @return string
+     */
     protected function getProtocolVersion(array $server): string
     {
         $protocol = (string) ($server['SERVER_PROTOCOL'] ?? '');
@@ -81,6 +105,8 @@ final readonly class ServerRequestCreator
     }
 
     /**
+     * Parse/marshal headers.
+     *
      * @param array<string, mixed> $server
      *
      * @return array<string, list<string>>
@@ -107,14 +133,25 @@ final readonly class ServerRequestCreator
         return $headers;
     }
 
+    /**
+     * Normalize HTTP header name.
+     *
+     * @param string $raw
+     *
+     * @return string
+     */
     protected function normalizeHeaderName(string $raw): string
     {
         return ucwords(str_replace('_', '-', strtolower($raw)), '-');
     }
 
     /**
-     * @param array<string, mixed> $server
+     * Build URI object.
+     *
+     * @param array<string, mixed>        $server
      * @param array<string, list<string>> $headers
+     *
+     * @return UriInterface
      */
     protected function getUri(array $server, array $headers): UriInterface
     {
@@ -133,8 +170,12 @@ final readonly class ServerRequestCreator
     }
 
     /**
-     * @param array<string, mixed> $server
+     * Parse scheme.
+     *
+     * @param array<string, mixed>        $server
      * @param array<string, list<string>> $headers
+     *
+     * @return string
      */
     protected function getScheme(array $server, array $headers): string
     {
@@ -158,7 +199,9 @@ final readonly class ServerRequestCreator
     }
 
     /**
-     * @param array<string, mixed> $server
+     * Parse host and port.
+     *
+     * @param array<string, mixed>        $server
      * @param array<string, list<string>> $headers
      *
      * @return array{0: string, 1: int|null}
@@ -196,7 +239,13 @@ final readonly class ServerRequestCreator
         return [$host, $port];
     }
 
-    /** @return array{0: string, 1: int|null} */
+    /**
+     * Split host and port into an array.
+     *
+     * @param string $host E.g. "localhost:8000"
+     *
+     * @return array{0: string, 1: int|null}
+     */
     protected function splitHostPort(string $host): array
     {
         $host = trim($host);
@@ -229,6 +278,8 @@ final readonly class ServerRequestCreator
     }
 
     /**
+     * Parse path and query.
+     *
      * @param array<string, mixed> $server
      *
      * @return array{0: string, 1: string}
@@ -249,6 +300,13 @@ final readonly class ServerRequestCreator
         return [$path === '' ? '/' : $path, (string) ($server['QUERY_STRING'] ?? '')];
     }
 
+    /**
+     * Resolve body as a Stream.
+     *
+     * @param StreamInterface|string|null $body
+     *
+     * @return StreamInterface
+     */
     protected function resolveBody(StreamInterface|string|null $body): StreamInterface
     {
         if ($body instanceof StreamInterface) {
@@ -259,8 +317,11 @@ final readonly class ServerRequestCreator
     }
 
     /**
+     * Parse request body.
+     *
      * @param array<string, list<string>> $headers
-     * @param array<array-key, mixed> $post
+     * @param array<array-key, mixed>     $post
+     * @param StreamInterface             $body
      *
      * @return array<array-key, mixed>|object|null
      */
@@ -288,7 +349,13 @@ final readonly class ServerRequestCreator
         return null;
     }
 
-    /** @param array<string, list<string>> $headers */
+    /**
+     * Normalize HTTP content-type header.
+     *
+     * @param array<string, list<string>> $headers
+     *
+     * @return string
+     */
     protected function normalizedContentType(array $headers): string
     {
         $line = $this->firstHeaderValue($headers, 'Content-Type');
@@ -303,7 +370,14 @@ final readonly class ServerRequestCreator
         return $semicolon === false ? $line : trim(substr($line, 0, $semicolon));
     }
 
-    /** @param array<string, list<string>> $headers */
+    /**
+     * Get the first value of a header.
+     *
+     * @param array<string, list<string>> $headers
+     * @param string                      $name
+     *
+     * @return string|null
+     */
     protected function firstHeaderValue(array $headers, string $name): ?string
     {
         $lower = strtolower($name);
@@ -317,6 +391,13 @@ final readonly class ServerRequestCreator
         return null;
     }
 
+    /**
+     * Read raw contents of body stream.
+     *
+     * @param StreamInterface $body
+     *
+     * @return string
+     */
     protected function readRaw(StreamInterface $body): string
     {
         if ($body->isSeekable()) {
@@ -333,6 +414,8 @@ final readonly class ServerRequestCreator
     }
 
     /**
+     * Normalize uploaded files array for parsing.
+     *
      * @param array<array-key, mixed> $files
      *
      * @return array<array-key, mixed>
@@ -356,6 +439,8 @@ final readonly class ServerRequestCreator
     }
 
     /**
+     * Normalize file spec for parsing.
+     *
      * @param array<array-key, mixed> $spec
      *
      * @return UploadedFileInterface|array<array-key, mixed>
@@ -379,6 +464,8 @@ final readonly class ServerRequestCreator
     }
 
     /**
+     * Normalize nested file spec for parsing.
+     *
      * @param array<array-key, mixed> $spec
      * @param array<array-key, mixed> $tmpNames
      *
@@ -401,11 +488,30 @@ final readonly class ServerRequestCreator
         return $result;
     }
 
+    /**
+     * Get sub value.
+     *
+     * @param mixed      $values
+     * @param int|string $key
+     *
+     * @return mixed
+     */
     protected function subValue(mixed $values, int|string $key): mixed
     {
         return is_array($values) ? $values[$key] ?? null : null;
     }
 
+    /**
+     * Create uploaded file instance from spec.
+     *
+     * @param string      $tmpName
+     * @param int|null    $size
+     * @param int         $error
+     * @param string|null $clientFilename
+     * @param string|null $clientMediaType
+     *
+     * @return UploadedFileInterface
+     */
     protected function createUploadedFileFromSpec(
         string $tmpName,
         ?int $size,
@@ -421,7 +527,13 @@ final readonly class ServerRequestCreator
         return $this->factory->createUploadedFile($stream, $size, $error, $clientFilename, $clientMediaType);
     }
 
-    /** @param array<string, mixed> $server */
+    /**
+     * Check if the request was made from a trusted proxy.
+     *
+     * @param array<string, mixed> $server
+     *
+     * @return bool
+     */
     protected function isFromTrustedProxy(array $server): bool
     {
         if ($this->trustedProxies === []) {
@@ -444,6 +556,14 @@ final readonly class ServerRequestCreator
         return false;
     }
 
+    /**
+     * Check if an IP matches a proxy.
+     *
+     * @param string $ip
+     * @param string $proxy
+     *
+     * @return bool
+     */
     protected function ipMatchesProxy(string $ip, string $proxy): bool
     {
         if (!str_contains($proxy, '/')) {
