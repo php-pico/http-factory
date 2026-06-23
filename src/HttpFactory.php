@@ -4,20 +4,29 @@ declare(strict_types=1);
 
 namespace PhpPico\Http\Factory;
 
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ServerRequestFactoryInterface;
+use InvalidArgumentException;
 use Override;
-use Psr\Http\Message\UriInterface;
-use Psr\Http\Message\RequestInterface;
-use PhpPico\Http\Message\Uri;
 use PhpPico\Http\Message\Request;
-use Psr\Http\Message\ResponseInterface;
 use PhpPico\Http\Message\Response;
-use Psr\Http\Message\ServerRequestInterface;
 use PhpPico\Http\Message\ServerRequest;
+use PhpPico\Http\Message\Stream;
+use PhpPico\Http\Message\Uri;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
+use RuntimeException;
 
-final class HttpFactory implements RequestFactoryInterface, ResponseFactoryInterface, ServerRequestFactoryInterface
+final class HttpFactory implements
+    RequestFactoryInterface,
+    ResponseFactoryInterface,
+    ServerRequestFactoryInterface,
+    StreamFactoryInterface
 {
     /**
      * Create a new request.
@@ -34,7 +43,7 @@ final class HttpFactory implements RequestFactoryInterface, ResponseFactoryInter
     {
         if (is_string($uri)) {
             $uri = new Uri($uri);
-        }    
+        }
 
         return new Request($method, $uri);
     }
@@ -79,5 +88,62 @@ final class HttpFactory implements RequestFactoryInterface, ResponseFactoryInter
         }
 
         return new ServerRequest($method, $uri, $serverParams);
+    }
+
+    /**
+     * Create a new stream from a string.
+     *
+     * The stream SHOULD be created with a temporary resource.
+     *
+     * @param string $content String content with which to populate the stream.
+     *
+     * @return StreamInterface
+     */
+    #[Override]
+    public function createStream(string $content = ''): StreamInterface
+    {
+        return Stream::create($content);
+    }
+
+    /**
+     * Create a stream from an existing file.
+     *
+     * The file MUST be opened using the given mode, which may be any mode
+     * supported by the `fopen` function.
+     *
+     * The `$filename` MAY be any string supported by `fopen()`.
+     *
+     * @param string $filename Filename or stream URI to use as basis of stream.
+     * @param string $mode Mode with which to open the underlying filename/stream.
+     *
+     * @return StreamInterface
+     * @throws RuntimeException If the file cannot be opened.
+     * @throws InvalidArgumentException If the mode is invalid.
+     */
+    #[Override]
+    public function createStreamFromFile(string $filename, string $mode = 'r'): StreamInterface
+    {
+        $resource = fopen($filename, $mode);
+
+        if (!$resource) {
+            throw new RuntimeException('The file could not be opened');
+        }
+
+        return new Stream($resource);
+    }
+
+    /**
+     * Create a new stream from an existing resource.
+     *
+     * The stream MUST be readable and may be writable.
+     *
+     * @param resource $resource PHP resource to use as basis of stream.
+     *
+     * @return StreamInterface
+     */
+    #[Override]
+    public function createStreamFromResource($resource): StreamInterface
+    {
+        return new Stream($resource);
     }
 }

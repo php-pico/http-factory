@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace PhpPico\Http\Factory\Tests;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Psr\Http\Message\ResponseFactoryInterface;
-use PhpPico\Http\Factory\HttpFactory;
-use PHPUnit\Framework\Attributes\Test;
-use Psr\Http\Message\ResponseInterface;
 use InvalidArgumentException;
+use PhpPico\Http\Factory\HttpFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 
 #[CoversClass(ResponseFactoryInterface::class)]
 #[CoversClass(HttpFactory::class)]
@@ -23,7 +23,11 @@ final class ResponseFactoryTest extends TestCase
         $factory = new HttpFactory();
 
         $expectedClass = ResponseFactoryInterface::class;
-        $this->assertInstanceOf($expectedClass, $factory, sprintf('HTTP Factory must be an instance of %s', $expectedClass));
+        $this->assertInstanceOf(
+            $expectedClass,
+            $factory,
+            sprintf('HTTP Factory must be an instance of %s', $expectedClass),
+        );
     }
 
     #[Test]
@@ -34,7 +38,11 @@ final class ResponseFactoryTest extends TestCase
         $response = $factory->createResponse();
 
         $expectedClass = ResponseInterface::class;
-        $this->assertInstanceOf($expectedClass, $response, sprintf('HttpFactory::createResponse() must return an instance of %s', $expectedClass));
+        $this->assertInstanceOf(
+            $expectedClass,
+            $response,
+            sprintf('HttpFactory::createResponse() must return an instance of %s', $expectedClass),
+        );
     }
 
     #[Test]
@@ -46,7 +54,11 @@ final class ResponseFactoryTest extends TestCase
 
         $response = $factory->createResponse($code);
         $this->assertEquals($code, $response->getStatusCode(), 'The response must have status code: 418');
-        $this->assertEquals("I'm a teapot", $response->getReasonPhrase(), "The response must have reason phrase: I'm a teapot");
+        $this->assertEquals(
+            "I'm a teapot",
+            $response->getReasonPhrase(),
+            "The response must have reason phrase: I'm a teapot",
+        );
     }
 
     #[Test]

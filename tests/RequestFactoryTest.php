@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace PhpPico\Http\Factory\Tests;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
-use Psr\Http\Message\RequestFactoryInterface;
 use PhpPico\Http\Factory\HttpFactory;
-use PHPUnit\Framework\Attributes\Test;
-use Psr\Http\Message\RequestInterface;
 use PhpPico\Http\Message\Uri;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\RequestInterface;
 
 #[CoversClass(RequestFactoryInterface::class)]
 #[CoversClass(HttpFactory::class)]
@@ -22,7 +22,11 @@ final class RequestFactoryTest extends TestCase
         $factory = new HttpFactory();
 
         $expectedClass = RequestFactoryInterface::class;
-        $this->assertInstanceOf($expectedClass, $factory, sprintf('HTTP Factory must be an instance of %s', $expectedClass));
+        $this->assertInstanceOf(
+            $expectedClass,
+            $factory,
+            sprintf('HTTP Factory must be an instance of %s', $expectedClass),
+        );
     }
 
     #[Test]
@@ -31,9 +35,13 @@ final class RequestFactoryTest extends TestCase
         $factory = new HttpFactory();
 
         $request = $factory->createRequest('GET', 'https://example.com');
-        
+
         $expectedClass = RequestInterface::class;
-        $this->assertInstanceOf($expectedClass, $request, sprintf('HttpFactory::createRequest() must return an instance of %s', $expectedClass));
+        $this->assertInstanceOf(
+            $expectedClass,
+            $request,
+            sprintf('HttpFactory::createRequest() must return an instance of %s', $expectedClass),
+        );
     }
 
     #[Test]
@@ -42,7 +50,7 @@ final class RequestFactoryTest extends TestCase
         $factory = new HttpFactory();
 
         $method = 'GET';
-        $uri    = 'https://example.com/test';
+        $uri = 'https://example.com/test';
 
         $request = $factory->createRequest($method, $uri);
         $this->assertEquals($method, $request->getMethod(), 'The request method must persist through the factory');
@@ -55,7 +63,7 @@ final class RequestFactoryTest extends TestCase
         $factory = new HttpFactory();
 
         $method = 'GET';
-        $uri    = new Uri('https://example.com/test');
+        $uri = new Uri('https://example.com/test');
 
         $request = $factory->createRequest($method, $uri);
         $this->assertEquals($method, $request->getMethod(), 'The request method must persist through the factory');
