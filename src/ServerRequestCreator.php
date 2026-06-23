@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpPico\Http\Factory;
 
+use PhpPico\Utility\IpAddress;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -547,48 +548,18 @@ final readonly class ServerRequestCreator
             return false;
         }
 
+        $ip = new IpAddress();
+
+        if (!$ip->isIpv4($remote) && !$ip->isIpv6($remote)) {
+            return false;
+        }
+
         foreach ($this->trustedProxies as $proxy) {
-            if ($this->ipMatchesProxy($remote, $proxy)) {
+            if ($ip->matches($remote, $proxy)) {
                 return true;
             }
         }
 
         return false;
-    }
-
-    /**
-     * Check if an IP matches a proxy.
-     *
-     * @param string $ip
-     * @param string $proxy
-     *
-     * @return bool
-     */
-    protected function ipMatchesProxy(string $ip, string $proxy): bool
-    {
-        if (!str_contains($proxy, '/')) {
-            $ipLong = ip2long($ip);
-            $proxyLong = ip2long($proxy);
-
-            return $ipLong !== false && $proxyLong !== false && $ipLong === $proxyLong;
-        }
-
-        [$subnet, $bits] = explode('/', $proxy, 2);
-
-        if (!ctype_digit($bits)) {
-            return false;
-        }
-
-        $bits = (int) $bits;
-        $ipLong = ip2long($ip);
-        $subnetLong = ip2long($subnet);
-
-        if ($ipLong === false || $subnetLong === false || $bits > 32) {
-            return false;
-        }
-
-        $mask = $bits === 0 ? 0 : -1 << (32 - $bits);
-
-        return ($ipLong & $mask) === ($subnetLong & $mask);
     }
 }

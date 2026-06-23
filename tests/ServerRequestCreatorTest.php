@@ -555,7 +555,7 @@ final class ServerRequestCreatorTest extends TestCase
     }
 
     #[Test]
-    public function ipv6_remote_addr_never_matches_inline_matcher(): void
+    public function trusted_proxy_ipv6_exact_ip_honors_forwarded_proto(): void
     {
         $request = $this->creator(['::1'])->fromArrays([
             'HTTP_HOST' => 'example.com',
@@ -565,9 +565,43 @@ final class ServerRequestCreatorTest extends TestCase
         ]);
 
         $this->assertEquals(
+            'https',
+            $request->getUri()->getScheme(),
+            'Trusted IPv6 proxy must honor X-Forwarded-Proto',
+        );
+    }
+
+    #[Test]
+    public function trusted_proxy_ipv6_cidr_honors_forwarded_proto(): void
+    {
+        $request = $this->creator(['2001:db8::/32'])->fromArrays([
+            'HTTP_HOST' => 'example.com',
+            'REQUEST_URI' => '/',
+            'REMOTE_ADDR' => '2001:db8::1',
+            'HTTP_X_FORWARDED_PROTO' => 'https',
+        ]);
+
+        $this->assertEquals(
+            'https',
+            $request->getUri()->getScheme(),
+            'Trusted IPv6 CIDR proxy must honor X-Forwarded-Proto',
+        );
+    }
+
+    #[Test]
+    public function invalid_remote_addr_ignores_forwarded_headers(): void
+    {
+        $request = $this->creator(['10.0.0.1'])->fromArrays([
+            'HTTP_HOST' => 'example.com',
+            'REQUEST_URI' => '/',
+            'REMOTE_ADDR' => 'not-an-ip',
+            'HTTP_X_FORWARDED_PROTO' => 'https',
+        ]);
+
+        $this->assertEquals(
             'http',
             $request->getUri()->getScheme(),
-            'Inline IPv4-only matcher must not match IPv6 (fail-closed)',
+            'A malformed REMOTE_ADDR must fail closed without throwing',
         );
     }
 

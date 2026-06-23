@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5d103841506feba6067092cf199b6d3e",
+    "content-hash": "860c8ca43d5dad11d3618b2bf91a6ed2",
     "packages": [
         {
             "name": "php-pico/http-message",
@@ -44,6 +44,44 @@
                 "source": "https://github.com/php-pico/http-message/tree/0.1.1"
             },
             "time": "2026-06-22T13:49:21+00:00"
+        },
+        {
+            "name": "php-pico/utility",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-pico/utility.git",
+                "reference": "ade1083deb8e2da38ed9526561c08a907b919cfa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-pico/utility/zipball/ade1083deb8e2da38ed9526561c08a907b919cfa",
+                "reference": "ade1083deb8e2da38ed9526561c08a907b919cfa",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.5"
+            },
+            "require-dev": {
+                "carthage-software/mago": "^1.30.0",
+                "phpunit/phpunit": "^12.5.30"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpPico\\Utility\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A utility package with reusable helpers for the php-pico framework.",
+            "support": {
+                "issues": "https://github.com/php-pico/utility/issues",
+                "source": "https://github.com/php-pico/utility/tree/0.1.0"
+            },
+            "time": "2026-06-23T12:45:35+00:00"
         },
         {
             "name": "psr/http-factory",
