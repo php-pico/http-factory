@@ -48,7 +48,7 @@ final class HttpFactory implements
     public function createRequest(string $method, $uri): RequestInterface
     {
         if (is_string($uri)) {
-            $uri = new Uri($uri);
+            $uri = $this->createUri($uri);
         }
 
         return new Request($method, $uri);
@@ -90,7 +90,7 @@ final class HttpFactory implements
     public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
     {
         if (is_string($uri)) {
-            $uri = new Uri($uri);
+            $uri = $this->createUri($uri);
         }
 
         return new ServerRequest($method, $uri, $serverParams);
