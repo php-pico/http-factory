@@ -10,6 +10,7 @@ use PhpPico\Http\Message\Request;
 use PhpPico\Http\Message\Response;
 use PhpPico\Http\Message\ServerRequest;
 use PhpPico\Http\Message\Stream;
+use PhpPico\Http\Message\UploadedFile;
 use PhpPico\Http\Message\Uri;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
@@ -19,6 +20,8 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
+use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
 
@@ -26,7 +29,8 @@ final class HttpFactory implements
     RequestFactoryInterface,
     ResponseFactoryInterface,
     ServerRequestFactoryInterface,
-    StreamFactoryInterface
+    StreamFactoryInterface,
+    UploadedFileFactoryInterface
 {
     /**
      * Create a new request.
@@ -145,5 +149,36 @@ final class HttpFactory implements
     public function createStreamFromResource($resource): StreamInterface
     {
         return new Stream($resource);
+    }
+
+    /**
+     * Create a new uploaded file.
+     *
+     * If a size is not provided it will be determined by checking the size of
+     * the file.
+     *
+     * @see http://php.net/manual/features.file-upload.post-method.php
+     * @see http://php.net/manual/features.file-upload.errors.php
+     *
+     * @param StreamInterface $stream Underlying stream representing the
+     *     uploaded file content.
+     * @param int|null $size in bytes
+     * @param int $error PHP file upload error
+     * @param string|null $clientFilename Filename as provided by the client, if any.
+     * @param string|null $clientMediaType Media type as provided by the client, if any.
+     *
+     * @return UploadedFileInterface
+     *
+     * @throws InvalidArgumentException If the file resource is not readable.
+     */
+    #[Override]
+    public function createUploadedFile(
+        StreamInterface $stream,
+        ?int $size = null,
+        int $error = \UPLOAD_ERR_OK,
+        ?string $clientFilename = null,
+        ?string $clientMediaType = null,
+    ): UploadedFileInterface {
+        return new UploadedFile($stream, $size, $error, $clientFilename, $clientMediaType);
     }
 }
