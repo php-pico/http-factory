@@ -5,16 +5,20 @@
     "license"     : "MIT",
     "minimum-stability": "stable",
     "scripts"     : {
+        "format": "mago format",
         "mago": "mago analyze",
         "test": "phpunit -c phpunit.xml.dist",
         "qa": [
+            "@format",
             "@mago",
             "@test"
         ]
     },
     "require"     : {
         "php": "^8.5",
-        "psr/http-factory": "^1.1"
+        "psr/http-factory": "^1.1",
+        "php-pico/http-message": "^0.1.1",
+        "php-pico/utility": "^0.1.0"
     },
     "autoload"    : {
         "psr-4": {
