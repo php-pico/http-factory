@@ -22,6 +22,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 use RuntimeException;
 
@@ -30,7 +31,8 @@ final class HttpFactory implements
     ResponseFactoryInterface,
     ServerRequestFactoryInterface,
     StreamFactoryInterface,
-    UploadedFileFactoryInterface
+    UploadedFileFactoryInterface,
+    UriFactoryInterface
 {
     /**
      * Create a new request.
@@ -180,5 +182,20 @@ final class HttpFactory implements
         ?string $clientMediaType = null,
     ): UploadedFileInterface {
         return new UploadedFile($stream, $size, $error, $clientFilename, $clientMediaType);
+    }
+
+    /**
+     * Create a new URI.
+     *
+     * @param string $uri
+     *
+     * @return UriInterface
+     *
+     * @throws InvalidArgumentException If the given URI cannot be parsed.
+     */
+    #[Override]
+    public function createUri(string $uri = ''): UriInterface
+    {
+        return new Uri($uri);
     }
 }
