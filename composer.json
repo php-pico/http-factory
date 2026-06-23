@@ -5,9 +5,11 @@
     "license"     : "MIT",
     "minimum-stability": "stable",
     "scripts"     : {
+        "format": "mago format",
         "mago": "mago analyze",
         "test": "phpunit -c phpunit.xml.dist",
         "qa": [
+            "@format",
             "@mago",
             "@test"
         ]
